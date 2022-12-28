@@ -16,6 +16,7 @@ public interface MovieApi {
     // The three parameters which you were passing , one of them was actually path and remaining both were query params ( represented by ? and further &)
     // First one was page, which is not a query parameter but path actually which needed to be dynamic.
     // Check in bracket of @GET(to see how dynamic path is passed).
+    // Refer to https://www.youtube.com/watch?v=TyJEDhauUeQ&list=PLrnPJCHvNZuCbuD3xpfKzQWOj3AXybSaM&index=2 if you want
 
     @GET("/{page}/search/movie/")
     Call<MovieSearchResponse> searchMovie(
