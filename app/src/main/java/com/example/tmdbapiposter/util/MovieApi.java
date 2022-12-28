@@ -10,13 +10,9 @@ import retrofit2.http.Query;
 public interface MovieApi {
 
     // Searching for movie
-    // Sample request link for Lucy
+    // Sample request link for Lucy movie
     //https://api.themoviedb.org/3/search/movie?api_key=ce2216bc2dee5f31578745a53ad56da8&query=Lucy
 
-    // The three parameters which you were passing , one of them was actually path and remaining both were query params ( represented by ? and further &)
-    // First one was page, which is not a query parameter but path actually which needed to be dynamic.
-    // Check in bracket of @GET(to see how dynamic path is passed).
-    // Refer to https://www.youtube.com/watch?v=TyJEDhauUeQ&list=PLrnPJCHvNZuCbuD3xpfKzQWOj3AXybSaM&index=2 if you want
 
     @GET("/{page}/search/movie/")
     Call<MovieSearchResponse> searchMovie(

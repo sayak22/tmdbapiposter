@@ -45,7 +45,7 @@ public class MovieListActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-        extname = name.getText().toString();
+            extname = name.getText().toString();
                 GetRetrofitResponse();
             }
         });
@@ -54,8 +54,6 @@ public class MovieListActivity extends AppCompatActivity {
 
     public void GetRetrofitResponse(){
 
-        // Check changes in Manifest and res/xml/network_security_config files. These files were added just because API was not allowing my network, nothing to worry about !
-
         MovieApi movieApi = Servicey.getMovieApi();
         Call<MovieSearchResponse> responseCall= movieApi
                 .searchMovie(
@@ -63,27 +61,32 @@ public class MovieListActivity extends AppCompatActivity {
                         Credentials.API_KEY,
                         extname
 
-                );
+                );// This response call was only working with page 2,3 and 4 only
         responseCall.enqueue(new Callback<MovieSearchResponse>() {
             @Override
             public void onResponse(Call<MovieSearchResponse> call, Response<MovieSearchResponse> response) {
+                // response code 200 means success
                 if(response.code()==200){
 //                    Toast.makeText(MovieListActivity.this, "the response :: " + response.body().toString(), Toast.LENGTH_SHORT).show();
+                    // getting the movie list from the response
                     List<MovieModel> movies = new ArrayList<>(response.body().getMovies());
+
+                    // checking if the array is empty i.e no matching movie is present
                     if(movies.isEmpty()) {
                         Toast.makeText(MovieListActivity.this, "Error :: " + response.message(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    String posterPath = movies.get(0).getPoster_path();
+                    String posterPath = movies.get(0).getPoster_path(); // extracting poster path of the matching movie
 
-                    // Using
+                    // Using picasso library to change the source of the imageview to the required poster path
                     Picasso
                             .get()
                             .load("https://image.tmdb.org/t/p/w500/"+posterPath)
                             .into(img);
 
                 }
+                // in case of any failure
                 else{
                     try {
                         Toast.makeText(MovieListActivity.this, "Error :: " + response.message(), Toast.LENGTH_SHORT).show();
