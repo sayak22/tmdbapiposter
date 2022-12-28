@@ -45,12 +45,16 @@ public class MovieListActivity extends AppCompatActivity {
     }
 
     public void GetRetrofitResponse(){
+
+        // Check changes in Manifest and res/xml/network_security_config files. These files were added just because API was not allowing my network, nothing to worry about !
+
         MovieApi movieApi = Servicey.getMovieApi();
         Call<MovieSearchResponse> responseCall= movieApi
                 .searchMovie(
+                        "3",
                         Credentials.API_KEY,
-                        "Lucy",
-                        "1"
+                        "Lucy"
+
                 );
         responseCall.enqueue(new Callback<MovieSearchResponse>() {
             @Override
@@ -60,8 +64,11 @@ public class MovieListActivity extends AppCompatActivity {
 
                     List<MovieModel> movies = new ArrayList<>(response.body().getMovies());
 
-                    for(MovieModel movie: movies)
-                        Log.v("Tag","the poster path" + movie.getPoster_path());
+                    for(MovieModel movie: movies){
+                        String posterPath = movie.getPoster_path();
+                        Log.v("Tag","the poster path " +posterPath);
+
+                    }
 
                 }
                 else{
@@ -76,6 +83,7 @@ public class MovieListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieSearchResponse> call, Throwable t) {
+                Log.e("ERROR" , t.getMessage().toString());
 
             }
         });
