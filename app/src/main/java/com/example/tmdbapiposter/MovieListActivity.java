@@ -6,12 +6,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.tmdbapiposter.models.MovieModel;
 import com.example.tmdbapiposter.request.Servicey;
 import com.example.tmdbapiposter.response.MovieSearchResponse;
 import com.example.tmdbapiposter.util.Credentials;
 import com.example.tmdbapiposter.util.MovieApi;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +29,8 @@ public class MovieListActivity extends AppCompatActivity {
 
     Button btn;
     EditText name;
+    ImageView img;
+    String extname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +39,13 @@ public class MovieListActivity extends AppCompatActivity {
 
         btn= findViewById(R.id.button);
         name = findViewById(R.id.movieName);
+        img = findViewById(R.id.image);
+
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+        extname = name.getText().toString();
                 GetRetrofitResponse();
             }
         });
@@ -53,29 +61,35 @@ public class MovieListActivity extends AppCompatActivity {
                 .searchMovie(
                         "3",
                         Credentials.API_KEY,
-                        "Lucy"
+                        extname
 
                 );
         responseCall.enqueue(new Callback<MovieSearchResponse>() {
             @Override
             public void onResponse(Call<MovieSearchResponse> call, Response<MovieSearchResponse> response) {
                 if(response.code()==200){
-                    Log.v("Tag","the response" + response.body().toString());
-
+//                    Toast.makeText(MovieListActivity.this, "the response :: " + response.body().toString(), Toast.LENGTH_SHORT).show();
                     List<MovieModel> movies = new ArrayList<>(response.body().getMovies());
-
-                    for(MovieModel movie: movies){
-                        String posterPath = movie.getPoster_path();
-                        Log.v("Tag","the poster path " +posterPath);
-
+                    if(movies.isEmpty()) {
+                        Toast.makeText(MovieListActivity.this, "Error :: " + response.message(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
+
+                    String posterPath = movies.get(0).getPoster_path();
+
+                    // Using
+                    Picasso
+                            .get()
+                            .load("https://image.tmdb.org/t/p/w500/"+posterPath)
+                            .into(img);
 
                 }
                 else{
                     try {
-                        Log.v("Tag","Error" + response.errorBody().string());
+                        Toast.makeText(MovieListActivity.this, "Error :: " + response.message(), Toast.LENGTH_SHORT).show();
+                        Log.v("Tag","Error" + response.message());
                     }
-                    catch (IOException e){
+                    catch (Exception e){
                         e.printStackTrace();
                     }
                 }
@@ -83,6 +97,7 @@ public class MovieListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieSearchResponse> call, Throwable t) {
+                Toast.makeText(MovieListActivity.this, "Error :: " + t.getMessage().toString(), Toast.LENGTH_SHORT).show();
                 Log.e("ERROR" , t.getMessage().toString());
 
             }
